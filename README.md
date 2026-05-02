@@ -33,7 +33,7 @@ Fornecer um CRUD completo de tarefas com suporte a marcação de conclusão e fi
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/to-do-list.git
+git clone https://github.com/leoguifo/to-do-list.git
 cd to-do-list
 
 # Crie e ative o ambiente virtual

@@ -39,6 +39,19 @@ class TaskRepository:
             query = query.filter(Task.status == status.value)
         return [TaskOut.model_validate(e) for e in query.all()]
 
+    def search(
+        self,
+        task_id: int | None = None,
+        status: TaskStatus | None = None,
+    ) -> list[TaskOut]:
+        """Search tasks by optional ID and/or status."""
+        query = self._db.query(Task)
+        if task_id is not None:
+            query = query.filter(Task.id == task_id)
+        if status is not None:
+            query = query.filter(Task.status == status.value)
+        return [TaskOut.model_validate(e) for e in query.all()]
+
     def get_by_id(self, task_id: int) -> TaskOut | None:
         """Return a task by ID, or None if not found."""
         entity = self._db.get(Task, task_id)
