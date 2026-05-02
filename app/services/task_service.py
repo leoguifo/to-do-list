@@ -11,8 +11,18 @@ class TaskNotFoundError(Exception):
 class TaskService:
     """Business layer for task operations."""
 
+    _NOT_FOUND_MESSAGE = "Task with id={task_id} not found"
+
     def __init__(self, repository: TaskRepository) -> None:
         self._repository = repository
+
+    def _raise_not_found(self, task_id: int) -> None:
+        raise TaskNotFoundError(self._NOT_FOUND_MESSAGE.format(task_id=task_id))
+
+    def _require_task(self, task: TaskOut | None, task_id: int) -> TaskOut:
+        if task is None:
+            self._raise_not_found(task_id)
+        return task
 
     def create_task(self, payload: TaskCreate) -> TaskOut:
         """Create and return a new task."""
@@ -33,19 +43,15 @@ class TaskService:
     def get_task_by_id(self, task_id: int) -> TaskOut:
         """Return one task by ID or raise TaskNotFoundError."""
         task = self._repository.get_by_id(task_id)
-        if task is None:
-            raise TaskNotFoundError(f"Task with id={task_id} not found")
-        return task
+        return self._require_task(task, task_id)
 
     def update_task(self, task_id: int, payload: TaskUpdate) -> TaskOut:
         """Update one task by ID or raise TaskNotFoundError."""
         task = self._repository.update(task_id, payload)
-        if task is None:
-            raise TaskNotFoundError(f"Task with id={task_id} not found")
-        return task
+        return self._require_task(task, task_id)
 
     def delete_task(self, task_id: int) -> None:
         """Delete one task by ID or raise TaskNotFoundError."""
         deleted = self._repository.delete(task_id)
         if not deleted:
-            raise TaskNotFoundError(f"Task with id={task_id} not found")
+            self._raise_not_found(task_id)
