@@ -117,6 +117,48 @@ def test_get_tasks_by_invalid_id_returns_404(client: TestClient) -> None:
     assert response.json()["detail"] == "Task with id=999 not found"
 
 
+def test_put_tasks_by_invalid_id_returns_404(client: TestClient) -> None:
+    """PUT /tasks/{id} should return 404 when task does not exist."""
+    response = client.put("/tasks/999", json={"title": "Nao existe"})
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Task with id=999 not found"
+
+
+def test_delete_tasks_by_invalid_id_returns_404(client: TestClient) -> None:
+    """DELETE /tasks/{id} should return 404 when task does not exist."""
+    response = client.delete("/tasks/999")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Task with id=999 not found"
+
+
+def test_post_tasks_with_missing_title_returns_422(client: TestClient) -> None:
+    """POST /tasks should return 422 when required fields are missing."""
+    response = client.post("/tasks", json={"description": "Sem titulo"})
+
+    assert response.status_code == 422
+
+
+def test_post_tasks_with_invalid_type_returns_422(client: TestClient) -> None:
+    """POST /tasks should return 422 when payload has invalid field types."""
+    response = client.post("/tasks", json={"title": 123})
+
+    assert response.status_code == 422
+
+
+def test_put_tasks_with_invalid_status_returns_422(client: TestClient) -> None:
+    """PUT /tasks/{id} should return 422 for invalid status enum value."""
+    created = client.post("/tasks", json={"title": "Original"}).json()
+
+    response = client.put(
+        f"/tasks/{created['id']}",
+        json={"status": "in-progress"},
+    )
+
+    assert response.status_code == 422
+
+
 def test_filter_tasks_returns_200_with_query_params(client: TestClient) -> None:
     """GET /tasks/filter should filter by id and status and return 200."""
     pending = client.post("/tasks", json={"title": "Pendente", "status": "pending"}).json()
@@ -128,3 +170,31 @@ def test_filter_tasks_returns_200_with_query_params(client: TestClient) -> None:
     body = response.json()
     assert len(body) == 1
     assert body[0]["id"] == pending["id"]
+
+
+def test_filter_tasks_without_params_returns_all(client: TestClient) -> None:
+    """GET /tasks/filter without params should return all tasks."""
+    client.post("/tasks", json={"title": "A"})
+    client.post("/tasks", json={"title": "B"})
+
+    response = client.get("/tasks/filter")
+
+    assert response.status_code == 200
+    assert len(response.json()) == 2
+
+
+def test_filter_tasks_with_no_match_returns_empty_list(client: TestClient) -> None:
+    """GET /tasks/filter should return empty list when filters do not match."""
+    pending = client.post("/tasks", json={"title": "A", "status": "pending"}).json()
+
+    response = client.get(f"/tasks/filter?id={pending['id']}&status=completed")
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_filter_tasks_with_invalid_id_returns_422(client: TestClient) -> None:
+    """GET /tasks/filter should return 422 for invalid query id."""
+    response = client.get("/tasks/filter?id=0")
+
+    assert response.status_code == 422
