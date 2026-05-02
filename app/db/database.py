@@ -5,7 +5,7 @@ from collections.abc import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
-DATABASE_URL = "sqlite:///./todo.db"
+DATABASE_URL = "sqlite:///./app/db/todolist.db"
 
 engine = create_engine(
     DATABASE_URL,
