@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 from fastapi import FastAPI
 from pydantic import BaseModel
+
+from app.db.database import create_tables
 
 
 class HealthResponse(BaseModel):
@@ -11,7 +15,13 @@ class HealthResponse(BaseModel):
     timestamp: str
 
 
-app = FastAPI(title="To-Do List API")
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    create_tables()
+    yield
+
+
+app = FastAPI(title="To-Do List API", lifespan=lifespan)
 
 
 @app.get("/health", response_model=HealthResponse)
