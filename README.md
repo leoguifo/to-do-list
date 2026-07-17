@@ -130,3 +130,29 @@ pytest tests/test_task_routes.py tests/test_health_routes.py -q
 ## Licença
 
 Uso educacional e de prototipação.
+
+## Análise de riscos e comunicação
+
+Foi realizada uma análise estruturada de riscos do MVP com registro em duas frentes complementares:
+
+- Pasta `riscos/`:
+	- `identificação.md`: levantamento dos principais riscos técnicos do projeto.
+	- `analise.md`: classificação qualitativa de probabilidade e impacto, com matriz de riscos.
+	- `respostas.md`: estratégias de tratamento por risco (evitar, mitigar, transferir ou aceitar), incluindo trade-offs e critérios de decisão.
+- Pasta `comunicacao/`:
+	- `status-stakeholders.md`: consolidação executiva para diretoria e áreas de negócio, destacando status, causas de atraso, impactos no negócio e próximos passos.
+
+### Síntese dos principais riscos mapeados
+
+- Configuração de banco de dados dependente de caminho fixo no código.
+- Ausência de migração versionada de schema.
+- Campo `status` sem restrição no nível do banco.
+- Listagem sem paginação (risco de degradação com crescimento de volume).
+- Dependências sem lock transitive completo.
+- Evolução de escopo com potencial de refatoração estrutural.
+- Falta de padronização automatizada de lint/formatação para equipe distribuída.
+- `PATCH` com payload vazio aceito silenciosamente.
+
+### Resultado da análise
+
+A análise indicou que, embora o MVP esteja funcional, havia risco de retrabalho em evolução e operação. Por isso, foi recomendado um ajuste de curto prazo no planejamento para priorizar estabilização técnica (configuração por ambiente, estratégia de migrações, paginação básica e padronização de qualidade), reduzindo exposição a regressões e melhorando previsibilidade das próximas entregas.
