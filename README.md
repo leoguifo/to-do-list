@@ -47,6 +47,12 @@ Fluxo principal:
 
 `Request HTTP -> Router -> Service -> Repository -> SQLite`
 
+### Documentação de diagramas (Diagrams as Code)
+
+- [`docs/roteiro-diagrama-componentes.md`](docs/roteiro-diagrama-componentes.md): roteiro que fundamenta o diagrama de componentes (Escopo, Nível, Limites, Integrações, Restrições, Lacunas).
+- [`docs/diagram-as-code.md`](docs/diagram-as-code.md): diagrama de componentes (C4 nível 3) em Mermaid C4.
+- [`docs/relatorio-diagram-as-code.md`](docs/relatorio-diagram-as-code.md): relatório de discovery de documentação, com decisões e ajustes sobre o que o modelo gerou.
+
 ## Instalação
 
 ### Pré-requisitos
